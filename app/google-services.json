@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "153138874951",
+    "project_id": "shopnest-f0d77",
+    "storage_bucket": "shopnest-f0d77.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:153138874951:android:6ab3bbef2789038de3ff62",
+        "android_client_info": {
+          "package_name": "com.example.shopnest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwgajd22FM3CMnc5KlelNwA8U2sl5OHog"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
