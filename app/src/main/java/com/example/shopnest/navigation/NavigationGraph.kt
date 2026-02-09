@@ -6,8 +6,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.shopnest.screen.AuthScreen
+import com.example.shopnest.screen.HomeScreen
 import com.example.shopnest.screen.LoginScreen
 import com.example.shopnest.screen.SignUpScreen
+import com.google.firebase.auth.FirebaseAuth
 
 /**
  * @author EMRAN AHMED
@@ -17,18 +19,26 @@ import com.example.shopnest.screen.SignUpScreen
 fun AppNavigation(modifier: Modifier = Modifier){
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "auth"){
+    val isLoggedIn = FirebaseAuth.getInstance().currentUser != null
+    val firstPage = if(isLoggedIn) Screen.Home.route else Screen.Auth.route
+
+
+    NavHost(navController = navController, startDestination = firstPage ){
 
         composable(Screen.Auth.route) {
             AuthScreen(modifier, navController)
         }
 
         composable(Screen.Login.route) {
-            LoginScreen(modifier)
+            LoginScreen(modifier, navController = navController)
         }
 
         composable(Screen.SignUp.route) {
-            SignUpScreen(modifier)
+            SignUpScreen(modifier, navController = navController)
         }
+        composable(Screen.Home.route) {
+            HomeScreen( navController = navController)
+        }
+
     }
 }
