@@ -2,6 +2,7 @@ package com.example.shopnest.screen
 
 import android.graphics.drawable.Icon
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
@@ -29,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -36,19 +41,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.shopnest.R
+import com.example.shopnest.components.HeaderView
 import com.example.shopnest.navigation.Screen
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.firestore
 
 /**
  * @author EMRAN AHMED
@@ -110,13 +121,11 @@ fun HomeScreen(navController: NavHostController){
     ) {
 
         when(selectedIndex){
-            0 -> HomeScreenMain(navController, modifier = Modifier.padding(it), selectedIndex)
-            1 -> CartScreenScreen(navController, modifier = Modifier.padding(it), selectedIndex)
-            2 -> FavouriteScreenScreen(navController, modifier = Modifier.padding(it), selectedIndex)
-            3 -> ProfileScreenScreen(navController, modifier = Modifier.padding(it), selectedIndex)
+            0 -> HomeScreenMain(navController, modifier = Modifier.padding(it))
+            1 -> CartScreenScreen(navController, modifier = Modifier.padding(it))
+            2 -> FavouriteScreenScreen(navController, modifier = Modifier.padding(it))
+            3 -> ProfileScreenScreen(navController, modifier = Modifier.padding(it))
         }
-
-
     }
 }
 
@@ -127,48 +136,81 @@ data class NavItems(
 
 
 @Composable
-fun HomeScreenMain(navController: NavHostController, modifier: Modifier = Modifier, index: Int){
+fun HomeScreenMain(navController: NavHostController, modifier: Modifier){
+    var name by remember {
+        mutableStateOf("")
+    }
+
     Column (
         modifier = modifier.fillMaxSize()
             .padding(32.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "Home Screen",
-            style = TextStyle(
-                fontSize = 30.sp,
-                fontFamily = FontFamily.Monospace,
-                fontWeight = FontWeight.Bold
+
+        Column (verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = "Home Screen",
+                style = TextStyle(
+                    fontSize = 30.sp,
+                    fontFamily = FontFamily.Monospace,
+                    fontWeight = FontWeight.Bold
+                )
             )
-        )
+            Spacer(Modifier.height(10.dp))
 
-        Spacer(Modifier.height(20.dp))
-
-        Icon(imageVector = Icons.Default.Home,
-            contentDescription = null,
-            Modifier.size(200.dp))
-
-        Spacer(Modifier.height(20.dp))
-
-        Button(onClick = {
-            FirebaseAuth.getInstance().signOut()
-            navController.navigate(Screen.Auth.route){
-                popUpTo(Screen.Home.route){
-                    inclusive = true
-                }
+            LaunchedEffect(Unit) {
+                Firebase.firestore.collection("users")
+                    .document(FirebaseAuth.getInstance().currentUser?.uid!!)
+                    .get()
+                    .addOnCompleteListener {
+                        name = it.result.get("name").toString().split(" ")[0]
+                    }
             }
-        },
-            Modifier.fillMaxWidth()
-                .height(60.dp)) {
-            Text("Sign Out", fontSize = 22.sp)
+
+            Text( text = "Welcome back $name",
+                style = TextStyle(
+                    fontSize = 20.sp,
+                    fontFamily = FontFamily.Monospace,
+                    textAlign = TextAlign.Center
+                )
+            )
+
+            Spacer(Modifier.height(20.dp))
+
+            HeaderView(modifier)
+
+//            Icon(imageVector = Icons.Default.Home,
+//                contentDescription = null,
+//                Modifier.size(200.dp))
+//
+//            Spacer(Modifier.height(10.dp))
+
+
+
+//        Spacer(Modifier.height(20.dp))
+//
+//        Button(onClick = {
+//            FirebaseAuth.getInstance().signOut()
+//            navController.navigate(Screen.Auth.route){
+//                popUpTo(Screen.Home.route){
+//                    inclusive = true
+//                }
+//            }
+//        },
+//            Modifier.fillMaxWidth()
+//                .height(60.dp)) {
+//            Text("Sign Out", fontSize = 22.sp)
+//        }
         }
+        //HeaderView(modifier)
     }
 }
 
 
 @Composable
-fun CartScreenScreen(navController: NavHostController, modifier: Modifier = Modifier, index: Int){
+fun CartScreenScreen(navController: NavHostController, modifier: Modifier = Modifier){
     Column (
         modifier = modifier.fillMaxSize()
             .padding(32.dp),
@@ -193,7 +235,7 @@ fun CartScreenScreen(navController: NavHostController, modifier: Modifier = Modi
 }
 
 @Composable
-fun FavouriteScreenScreen(navController: NavHostController, modifier: Modifier = Modifier, index: Int){
+fun FavouriteScreenScreen(navController: NavHostController, modifier: Modifier = Modifier){
     Column (
         modifier = modifier.fillMaxSize()
             .padding(32.dp),
@@ -218,7 +260,7 @@ fun FavouriteScreenScreen(navController: NavHostController, modifier: Modifier =
 }
 
 @Composable
-fun ProfileScreenScreen(navController: NavHostController, modifier: Modifier = Modifier, index: Int){
+fun ProfileScreenScreen(navController: NavHostController, modifier: Modifier = Modifier){
     Column (
         modifier = modifier.fillMaxSize()
             .padding(32.dp),
@@ -242,4 +284,9 @@ fun ProfileScreenScreen(navController: NavHostController, modifier: Modifier = M
     }
 }
 
+@Preview
+@Composable
+fun HomeScreenPreview(){
+    HomeScreen(navController = rememberNavController())
+}
 

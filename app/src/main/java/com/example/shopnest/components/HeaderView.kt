@@ -93,7 +93,7 @@ fun HeaderView(modifier: Modifier = Modifier) {
                     .clip(RoundedCornerShape(16.dp))
             )
         }
-        Spacer(modifier.height(2.dp))
+        Spacer(modifier.height(5.dp))
 
         DotsIndicator(
             dotCount = bannerList.size,

@@ -59,7 +59,6 @@ fun AuthScreen(modifier: Modifier = Modifier, navController: NavHostController){
             style = TextStyle(
                 fontSize = 20.sp,
                 fontFamily = FontFamily.Monospace,
-                fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center
             )
         )
