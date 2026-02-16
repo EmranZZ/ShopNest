@@ -82,7 +82,7 @@ fun SignUpScreen(modifier: Modifier = Modifier, viewModel: AuthViewModel = viewM
         )
         Spacer(Modifier.height(20.dp))
 
-        Image(painter = painterResource(R.drawable.shop_nest_banner),
+        Image(painter = painterResource(R.drawable.signup_banner),
             contentDescription = "Banner",
             Modifier.fillMaxWidth()
                 .height(200.dp))

@@ -81,7 +81,7 @@ fun LoginScreen(modifier: Modifier = Modifier, viewModel: AuthViewModel = viewMo
         )
         Spacer(Modifier.height(20.dp))
 
-        Image(painter = painterResource(R.drawable.signup_banner),
+        Image(painter = painterResource(R.drawable.login_banner2),
             contentDescription = "Banner",
             Modifier.fillMaxWidth()
                 .height(200.dp))

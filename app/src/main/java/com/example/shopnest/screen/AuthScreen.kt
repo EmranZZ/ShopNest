@@ -39,7 +39,7 @@ fun AuthScreen(modifier: Modifier = Modifier, navController: NavHostController){
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(painter = painterResource(R.drawable.banner),
+        Image(painter = painterResource(R.drawable.auth_banner),
             contentDescription = "Banner",
             Modifier.fillMaxWidth()
                 .height(200.dp))
