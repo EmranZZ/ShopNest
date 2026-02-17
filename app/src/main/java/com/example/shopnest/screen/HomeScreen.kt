@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.shopnest.pages.CartPage
-import com.example.shopnest.components.Categories
+import com.example.shopnest.components.CategoriesView
 import com.example.shopnest.pages.FavouritePage
 import com.example.shopnest.components.BannerView
 import com.example.shopnest.pages.ProfilePage
@@ -210,7 +210,8 @@ fun HomeScreenMain(navController: NavHostController, modifier: Modifier){
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.align(Alignment.Start))
             Spacer(Modifier.height(10.dp))
-            Categories(modifier)
+
+            CategoriesView(modifier, navController)
         }
     }
 }

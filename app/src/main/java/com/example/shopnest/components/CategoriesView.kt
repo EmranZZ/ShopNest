@@ -23,8 +23,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.shopnest.model.CategoryModel
 import com.google.firebase.Firebase
@@ -35,7 +35,7 @@ import com.google.firebase.firestore.firestore
  */
 
 @Composable
-fun Categories(modifier: Modifier){
+fun CategoriesView(modifier: Modifier, navController: NavHostController){
     var categoryList by remember {
         mutableStateOf<List<CategoryModel>>(emptyList())
     }
@@ -61,19 +61,20 @@ fun Categories(modifier: Modifier){
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     )  {
         items(categoryList){ item ->
-            CategoryItem(item)
+            CategoryItem(item, navController)
         }
     }
 }
 
 @Composable
-fun CategoryItem(item: CategoryModel ){
+fun CategoryItem(item: CategoryModel, navController: NavHostController){
     Column (
 //        modifier = Modifier.padding(16.dp)
     ) {
         Card (modifier = Modifier.size(120.dp)
             .align(Alignment.CenterHorizontally)
             .clickable{
+                navController.navigate("category_product/${item.id}")
             },
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 2.dp,
@@ -95,10 +96,4 @@ fun CategoryItem(item: CategoryModel ){
                 fontWeight = FontWeight.Bold)
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun CategoryPreview(){
-    Categories(modifier = Modifier)
 }

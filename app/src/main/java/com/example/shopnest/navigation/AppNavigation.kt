@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.shopnest.screen.AuthScreen
 import com.example.shopnest.screen.HomeScreen
 import com.example.shopnest.screen.LoginScreen
+import com.example.shopnest.screen.ProductCategoriesScreen
 import com.example.shopnest.screen.SignUpScreen
 import com.google.firebase.auth.FirebaseAuth
 
@@ -38,6 +39,11 @@ fun AppNavigation(modifier: Modifier = Modifier){
         }
         composable(Screen.Home.route) {
             HomeScreen( navController = navController)
+        }
+
+        composable(Screen.CategoryProduct.route) {
+            val categoryId = it.arguments?.getString("categoryId") ?: ""
+            ProductCategoriesScreen(modifier,  categoryId)
         }
 
     }
