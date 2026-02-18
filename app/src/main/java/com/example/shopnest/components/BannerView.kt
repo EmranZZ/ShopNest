@@ -27,6 +27,7 @@ import com.google.firebase.firestore.firestore
 import com.tbuonomo.viewpagerdotsindicator.compose.DotsIndicator
 import com.tbuonomo.viewpagerdotsindicator.compose.model.DotGraphic
 import com.tbuonomo.viewpagerdotsindicator.compose.type.ShiftIndicatorType
+import kotlinx.coroutines.delay
 
 /**
  * @author EMRAN AHMED
@@ -55,8 +56,16 @@ fun BannerView(modifier: Modifier = Modifier) {
             initialPage = 0,
             pageCount = { bannerList.size }
         )
+
+        LaunchedEffect(pagerState.currentPage) {
+            delay(3000)
+            val nextPage = (pagerState.currentPage + 1) % bannerList.size
+            pagerState.animateScrollToPage(nextPage)
+        }
+
         HorizontalPager(
             state = pagerState,
+            pageSpacing = 15.dp,
             modifier = Modifier.padding(2.dp), verticalAlignment = Alignment.CenterVertically
 
         ) { page ->
