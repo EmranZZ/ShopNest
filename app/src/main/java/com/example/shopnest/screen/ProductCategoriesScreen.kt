@@ -1,10 +1,13 @@
 package com.example.shopnest.screen
 
+import android.widget.Space
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -32,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.example.shopnest.components.ProductItemView
 import com.example.shopnest.model.ProductModel
 import com.google.firebase.Firebase
@@ -43,12 +47,12 @@ import com.google.firebase.firestore.firestore
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductCategoriesScreen(modifier: Modifier, category: String){
+fun ProductCategoriesScreen(category: String, modifier: Modifier, navController: NavHostController){
 
     Scaffold(topBar = {
         TopAppBar(
             title = {
-                Text("Category: $category",
+                Text(text = "Category: "+ category.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString()},
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -79,19 +83,29 @@ fun ProductCategoriesScreen(modifier: Modifier, category: String){
                         val result = it.result.documents.mapNotNull { docs ->
                             docs.toObject(ProductModel::class.java)
                         }
-                        productList = result
+                        productList = result.plus(result).plus(result).plus(result)
                     }
                 }
         }
 
-        LazyColumn (modifier.fillMaxSize().padding(innerPadding).padding(16.dp)
+        LazyColumn (modifier = Modifier.padding(innerPadding)
+            .fillMaxSize()
+            .padding(16.dp)
         ) {
             items(productList.chunked(2)){ product->
-                Row {
+                Row (//modifier = Modifier.fillMaxWidth(),
+                    //horizontalArrangement = Arrangement.SpaceEvenly
+                ){
                     product.forEach {
-                        ProductItemView(product = it, modifier = Modifier.weight(1f))
+                        ProductItemView(product = it, modifier = Modifier.weight(1f), navController)
+                    }
+
+                    if(product.size == 1){
+                        Spacer(modifier = Modifier.weight(1f))
                     }
                 }
+
+                Spacer(Modifier.height(5.dp))
             }
         }
     }
