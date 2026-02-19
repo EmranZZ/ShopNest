@@ -24,6 +24,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -33,13 +35,19 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.shopnest.model.ProductModel
+import com.example.shopnest.utils.AppUtils
 
 /**
  * @author EMRAN AHMED
  */
 
 @Composable
-fun ProductItemView(product: ProductModel, modifier: Modifier, navController: NavHostController){
+fun ProductItemView(
+    product: ProductModel,
+    modifier: Modifier, navController: NavHostController
+){
+    val context = LocalContext.current
+
     Card(
         modifier = modifier.padding(8.dp)
             .clickable{
@@ -62,7 +70,8 @@ fun ProductItemView(product: ProductModel, modifier: Modifier, navController: Na
             )
 
             Text(
-                text = product.title, modifier = Modifier.padding(8.dp).fillMaxWidth(),
+                text = product.title,
+                modifier = Modifier.padding(top = 4.dp).fillMaxWidth(),
                 fontWeight = FontWeight.Bold,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -90,7 +99,9 @@ fun ProductItemView(product: ProductModel, modifier: Modifier, navController: Na
             Spacer(Modifier.weight(1f))
 
             IconButton(
-                onClick = {}
+                onClick = {
+                    AppUtils.addToCart(context, product.id)
+                }
             ) {
                 Icon(
                     imageVector = Icons.Default.ShoppingCart,
