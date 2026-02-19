@@ -41,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -50,6 +51,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.shopnest.model.ProductModel
+import com.example.shopnest.utils.AppUtils
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import com.tbuonomo.viewpagerdotsindicator.compose.DotsIndicator
@@ -86,6 +88,8 @@ fun ProductDetailsPage(productId: String, modifier: Modifier, navController: Nav
         var product by remember {
             mutableStateOf(ProductModel())
         }
+
+        val context = LocalContext.current
 
         LaunchedEffect(
             Unit
@@ -189,7 +193,12 @@ fun ProductDetailsPage(productId: String, modifier: Modifier, navController: Nav
                 Spacer(Modifier.height(8.dp))
 
                 Button(
-                    onClick = {},
+                    /**
+                     * add items to the cart collection in firebase firestore
+                     */
+                    onClick = {
+                        AppUtils.addToCart(context, productId)
+                    },
                     Modifier.fillMaxWidth()
                         .height(50.dp),
                     elevation = ButtonDefaults.buttonElevation(
