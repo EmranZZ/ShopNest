@@ -56,13 +56,14 @@ fun BannerView(modifier: Modifier = Modifier) {
             initialPage = 0,
             pageCount = { bannerList.size }
         )
-
+/**
+ * auto scroll
         LaunchedEffect(pagerState.currentPage) {
             delay(3000)
             val nextPage = (pagerState.currentPage + 1) % bannerList.size
             pagerState.animateScrollToPage(nextPage)
         }
-
+*/
         HorizontalPager(
             state = pagerState,
             pageSpacing = 15.dp,
