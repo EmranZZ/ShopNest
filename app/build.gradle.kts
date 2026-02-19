@@ -62,5 +62,5 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     implementation(libs.dotsindicator)
     implementation(libs.coil)
-    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.core.splashscreen) // splash screen
 }
