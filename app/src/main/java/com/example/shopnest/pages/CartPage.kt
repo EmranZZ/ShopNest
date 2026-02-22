@@ -42,7 +42,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.example.shopnest.components.CartItemView
 import com.example.shopnest.model.ProductModel
+import com.example.shopnest.model.UserModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.firestore
@@ -58,8 +60,12 @@ fun CartPage(navController: NavHostController, modifier: Modifier = Modifier){
         mutableStateOf<Map<String, Long>>(emptyMap())
     }
 
-    var product by remember {
+    var products by remember {
         mutableStateOf<List<ProductModel>>(emptyList())
+    }
+
+    var userModel by remember {
+        mutableStateOf(UserModel())
     }
 
     var productName by remember {
@@ -76,18 +82,35 @@ fun CartPage(navController: NavHostController, modifier: Modifier = Modifier){
             Firebase.firestore.collection("users")
                 .document(FirebaseAuth.getInstance().currentUser?.uid!!)
                 .get()
-                .addOnCompleteListener { userInfo ->
-                    if(userInfo.isSuccessful){
-                     val cartData = userInfo.result.get("cartItems") as? Map<String, Long> ?: emptyMap()
+                .addOnCompleteListener { it ->
+                    if(it.isSuccessful){
 
-                        if(cartData.isNotEmpty()){
-                            cartItems = cartData
+                        val result = it.result.toObject(UserModel::class.java)
+
+                        if (result != null){
+                            userModel = result
                         }
+
+//                        val cartData = userInfo.result.get("cartItems") as? Map<String, Long> ?: emptyMap()
+//                        if(cartData.isNotEmpty()){
+//                            cartItems = cartData
+//                        }
                     }
                 }
 
         }
 
+        userModel.cartItems.forEach { (productId, qty) ->
+
+            CartItemView(
+                productId = productId,
+                quantity = qty,
+                modifier = Modifier.padding(8.dp),
+                navController = navController
+            )
+        }
+
+/*
         cartItems.forEach {(productId, quantity) ->
 
             Firebase.firestore.collection("data")
@@ -106,11 +129,7 @@ fun CartPage(navController: NavHostController, modifier: Modifier = Modifier){
                         //productName = title
                     }
                 }
-
-            LazyColumn {
-
-            }
-
+*/
             Card (
                 modifier = Modifier.fillMaxWidth()
                     .align(Alignment.CenterHorizontally)
@@ -193,22 +212,9 @@ fun CartPage(navController: NavHostController, modifier: Modifier = Modifier){
 //
 //                }
 
-                Text(
-                    text = "Product ID: $productName, \nQuantity: $quantity",
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(16.dp)
-                )
             }
 
             Spacer(Modifier.height(20.dp))
-        }
-
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-
-            Spacer(Modifier.height(20.dp))
-        }
+        //}
     }
 }
