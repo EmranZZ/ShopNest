@@ -59,7 +59,6 @@ import com.google.firebase.firestore.firestore
 fun CartItemView(
     productId: String,
     quantity: Long,
-    modifier: Modifier,
     navController: NavHostController
 ) {
 
@@ -88,8 +87,11 @@ fun CartItemView(
     }
 
     Card(
-        modifier = modifier.padding(8.dp)
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth()
+            .padding(8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
+        ),
         elevation = CardDefaults.cardElevation(8.dp),
         shape = RoundedCornerShape(12.dp)
     ) {
@@ -123,12 +125,12 @@ fun CartItemView(
 
                 Row (verticalAlignment = Alignment.CenterVertically){
                     Text(
-                        text = "$"+ productModel.actualPrice,
+                        text = "$"+ productModel.price,
                         fontWeight = FontWeight.SemiBold
                     )
                     Spacer(Modifier.width(8.dp))
                     Text(
-                        text = "$"+ productModel.price,
+                        text = "$"+ productModel.actualPrice,
                         fontSize = 12.sp,
                         style = TextStyle(textDecoration = TextDecoration.LineThrough)
                     )
