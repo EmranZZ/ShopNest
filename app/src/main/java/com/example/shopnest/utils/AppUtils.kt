@@ -2,6 +2,11 @@ package com.example.shopnest.utils
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
@@ -66,4 +71,18 @@ object AppUtils{
                 }
         }
     }
+
+    @Composable
+    fun Spacer(height: Int){
+        Spacer(Modifier.height(height.dp))
+    }
+
+    fun getDiscountPerc(): Float{
+        return 10f
+    }
+
+    fun getTaxPerc(): Float{
+        return 5f
+    }
+
 }
