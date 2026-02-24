@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.shopnest.pages.CheckoutPage
 import com.example.shopnest.pages.ProductDetailsPage
 import com.example.shopnest.screen.AuthScreen
 import com.example.shopnest.screen.HomeScreen
@@ -50,6 +51,10 @@ fun AppNavigation(modifier: Modifier = Modifier){
         composable(Screen.ProductDetails.route){
             val productId = it.arguments?.getString("productId") ?: ""
             ProductDetailsPage(productId, modifier, navController)
+        }
+
+        composable(Screen.Checkout.route) {
+            CheckoutPage(navController, modifier)
         }
     }
 }
