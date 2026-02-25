@@ -2,4 +2,8 @@
 <resources>
 
     <style name="Theme.ShopNest" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="CustomAlertDialog" parent="android:Theme.Material.Dialog.Alert">
+        <item name="android:windowBackground">@drawable/rounded_corner</item>
+    </style>
 </resources>
