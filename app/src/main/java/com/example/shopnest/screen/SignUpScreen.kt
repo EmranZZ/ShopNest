@@ -1,6 +1,5 @@
 package com.example.shopnest.screen
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,15 +24,13 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.shopnest.R
 import com.example.shopnest.navigation.Screen
-import com.example.shopnest.utils.AppUtils
+import com.example.shopnest.utils.Utils
 import com.example.shopnest.viewmodel.AuthViewModel
 
 /**
@@ -132,7 +129,7 @@ fun SignUpScreen(modifier: Modifier = Modifier, viewModel: AuthViewModel = viewM
                     }
 
                 } else{
-                    AppUtils.showText(context, errorMessage?:"Something went wrong")
+                    Utils.showText(context, errorMessage?:"Something went wrong")
                     isLoading = false
                 }
             }

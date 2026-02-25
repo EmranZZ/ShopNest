@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -25,14 +24,13 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.shopnest.R
 import com.example.shopnest.navigation.Screen
-import com.example.shopnest.utils.AppUtils
+import com.example.shopnest.utils.Utils
 import com.example.shopnest.viewmodel.AuthViewModel
 
 /**
@@ -123,7 +121,7 @@ fun LoginScreen(modifier: Modifier = Modifier, viewModel: AuthViewModel = viewMo
                     }
 
                 } else{
-                    AppUtils.showText(context, errorMessage?: "Something went wrong")
+                    Utils.showText(context, errorMessage?: "Something went wrong")
                     isLoading = false
                 }
             }

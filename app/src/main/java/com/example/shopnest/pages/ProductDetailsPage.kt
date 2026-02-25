@@ -1,7 +1,5 @@
 package com.example.shopnest.pages
 
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,12 +16,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ButtonElevation
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -51,13 +47,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.shopnest.model.ProductModel
-import com.example.shopnest.utils.AppUtils
+import com.example.shopnest.utils.Utils
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import com.tbuonomo.viewpagerdotsindicator.compose.DotsIndicator
 import com.tbuonomo.viewpagerdotsindicator.compose.model.DotGraphic
 import com.tbuonomo.viewpagerdotsindicator.compose.type.ShiftIndicatorType
-import kotlinx.coroutines.delay
 
 /**
  * @author EMRAN AHMED
@@ -197,7 +192,7 @@ fun ProductDetailsPage(productId: String, modifier: Modifier, navController: Nav
                      * add items to the cart collection in firebase firestore
                      */
                     onClick = {
-                        AppUtils.addToCart(context, productId)
+                        Utils.addToCart(context, productId)
                     },
                     Modifier.fillMaxWidth()
                         .height(50.dp),
