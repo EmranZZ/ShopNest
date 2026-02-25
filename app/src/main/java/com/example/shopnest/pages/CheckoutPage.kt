@@ -1,13 +1,14 @@
 package com.example.shopnest.pages
 
+
+import android.app.AlertDialog
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,13 +20,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.shopnest.R
 import com.example.shopnest.model.ProductModel
 import com.example.shopnest.model.UserModel
-import com.example.shopnest.utils.AppUtils
+import com.example.shopnest.navigation.Screen
+import com.example.shopnest.utils.Utils
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.firestore
@@ -60,6 +64,8 @@ fun CheckoutPage(navController: NavHostController, modifier: Modifier){
         mutableFloatStateOf(0f)
     }
 
+    val context = LocalContext.current
+
     fun calculate(){
         productList.forEach {
             val price = it.price.toFloat()
@@ -67,9 +73,9 @@ fun CheckoutPage(navController: NavHostController, modifier: Modifier){
 
             subTotal += price * quantity
 
-            discount = subTotal * (AppUtils.getDiscountPerc())/100
+            discount = subTotal * (Utils.getDiscountPerc())/100
 
-            tax = subTotal * (AppUtils.getTaxPerc())/100
+            tax = subTotal * (Utils.getTaxPerc())/100
 
             total = subTotal - discount + tax
         }
@@ -107,27 +113,31 @@ fun CheckoutPage(navController: NavHostController, modifier: Modifier){
     }
 
 
-    Column(modifier.padding(16.dp)) {
+    Column(
+        modifier.padding(16.dp)
+    ) {
         Text("Checkout"
             , fontSize = 22.sp
             , fontWeight = FontWeight.Bold
         )
-        AppUtils.Spacer(8)
+
+        Utils.Spacer(8)
         HorizontalDivider()
 
         DeliverAdd(user.name, user.address)
 
-        AppUtils.Spacer(8)
+        Utils.Spacer(8)
 
         HorizontalDivider()
-        AppUtils.Spacer(8)
+        Utils.Spacer(8)
 
         RowItemCheckout("Subtotal:", subTotal.toString())
         RowItemCheckout("Discount(-):", discount.toString())
         RowItemCheckout("Tax(+):", tax.toString())
 
         HorizontalDivider()
-        AppUtils.Spacer(8)
+        Utils.Spacer(48)
+
         Column(Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
@@ -135,13 +145,39 @@ fun CheckoutPage(navController: NavHostController, modifier: Modifier){
                 , fontSize = 18.sp
                 , fontWeight = FontWeight.Bold)
 
-            AppUtils.Spacer(8)
+            Utils.Spacer(8)
 
             Text(
                 "$${total.toString()}"
             , fontSize = 24.sp
             , fontWeight = FontWeight.ExtraBold)
 
+            Utils.Spacer(32)
+
+            Button(
+                onClick = {
+                    Utils.clearCartAddToOrder()
+
+                    val alertDialog = AlertDialog.Builder(context, R.style.CustomAlertDialog)
+                        .setTitle("Payment Confirmation")
+                        .setMessage("Are you sure you want to proceed?")
+                        .setPositiveButton("Confirm"){ _, _ ->
+                            navController.popBackStack()
+                            navController.navigate(Screen.Home.route)
+                        }
+                        .setNegativeButton("Cancel"){ dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .show()
+
+                },
+                Modifier.height(50.dp).fillMaxWidth()
+            ) {
+                Text(
+                    text = "PAYMENT",
+                    fontSize = 20.sp
+                )
+            }
         }
     }
 }
@@ -161,22 +197,22 @@ fun RowItemCheckout(title: String, price: String){
             , fontSize = 16.sp
         )
     }
-    AppUtils.Spacer(8)
+    Utils.Spacer(8)
 }
 
 @Composable
 fun DeliverAdd(userName: String, userAddress: String){
     Column {
-        AppUtils.Spacer(4)
+        Utils.Spacer(4)
 
         Text("Deliver to:"
             , fontSize = 18.sp
             , fontWeight = FontWeight.Bold
         )
 
-        AppUtils.Spacer(4)
+        Utils.Spacer(4)
         Text(userName)
-        AppUtils.Spacer(4)
+        Utils.Spacer(4)
         Text(userAddress)
     }
 }
