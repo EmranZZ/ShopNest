@@ -204,6 +204,7 @@ fun ProfilePage(navController: NavHostController, modifier: Modifier = Modifier)
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(vertical = 8.dp)
                     .clickable{
+                        navController.navigate(Screen.Order.route)
                     }
             )
 

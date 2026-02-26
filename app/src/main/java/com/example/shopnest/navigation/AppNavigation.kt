@@ -5,11 +5,12 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.shopnest.pages.CheckoutPage
 import com.example.shopnest.pages.ProductDetailsPage
 import com.example.shopnest.screen.AuthScreen
+import com.example.shopnest.screen.CheckoutScreen
 import com.example.shopnest.screen.HomeScreen
 import com.example.shopnest.screen.LoginScreen
+import com.example.shopnest.screen.OrderScreen
 import com.example.shopnest.screen.ProductCategoriesScreen
 import com.example.shopnest.screen.SignUpScreen
 import com.google.firebase.auth.FirebaseAuth
@@ -54,7 +55,11 @@ fun AppNavigation(modifier: Modifier = Modifier){
         }
 
         composable(Screen.Checkout.route) {
-            CheckoutPage(navController, modifier)
+            CheckoutScreen(navController, modifier)
+        }
+
+        composable (Screen.Order.route) {
+            OrderScreen(navController, modifier)
         }
     }
 }
