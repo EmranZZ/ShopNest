@@ -1,10 +1,11 @@
-package com.example.shopnest.pages
+package com.example.shopnest.screen
 
 
 import android.app.AlertDialog
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -39,7 +40,7 @@ import com.google.firebase.firestore.firestore
  */
 
 @Composable
-fun CheckoutPage(navController: NavHostController, modifier: Modifier){
+fun CheckoutScreen(navController: NavHostController, modifier: Modifier){
     var user by remember {
         mutableStateOf(UserModel())
     }
@@ -112,16 +113,17 @@ fun CheckoutPage(navController: NavHostController, modifier: Modifier){
             }
     }
 
-
     Column(
-        modifier.padding(16.dp)
+        modifier.fillMaxSize()
+            .padding(16.dp)
     ) {
-        Text("Checkout"
-            , fontSize = 22.sp
-            , fontWeight = FontWeight.Bold
+        Text("Checkout",
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold
         )
 
         Utils.Spacer(8)
+
         HorizontalDivider()
 
         DeliverAdd(user.name, user.address)
@@ -129,28 +131,34 @@ fun CheckoutPage(navController: NavHostController, modifier: Modifier){
         Utils.Spacer(8)
 
         HorizontalDivider()
+
         Utils.Spacer(8)
 
         RowItemCheckout("Subtotal:", subTotal.toString())
+
         RowItemCheckout("Discount(-):", discount.toString())
+
         RowItemCheckout("Tax(+):", tax.toString())
 
         HorizontalDivider()
+
         Utils.Spacer(48)
 
-        Column(Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Text(
-                "Let's Pay for:"
-                , fontSize = 18.sp
-                , fontWeight = FontWeight.Bold)
+                "Let's Pay for:",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold)
 
             Utils.Spacer(8)
 
             Text(
-                "$${total.toString()}"
-            , fontSize = 24.sp
-            , fontWeight = FontWeight.ExtraBold)
+                text = "$${String.format("%.2f", total)}",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.ExtraBold)
 
             Utils.Spacer(32)
 
@@ -159,15 +167,13 @@ fun CheckoutPage(navController: NavHostController, modifier: Modifier){
                     Utils.clearCartAddToOrder()
 
                     val alertDialog = AlertDialog.Builder(context, R.style.CustomAlertDialog)
-                        .setTitle("Payment Confirmation")
-                        .setMessage("Are you sure you want to proceed?")
-                        .setPositiveButton("Confirm"){ _, _ ->
+                        .setTitle("Payment Confirmation!")
+                        .setMessage("You have successfully paid $$total for your items")
+                        .setPositiveButton("CLOSE DIALOG"){ _, _ ->
                             navController.popBackStack()
                             navController.navigate(Screen.Home.route)
                         }
-                        .setNegativeButton("Cancel"){ dialog, _ ->
-                            dialog.dismiss()
-                        }
+                        .setCancelable(false)
                         .show()
 
                 },
@@ -185,16 +191,16 @@ fun CheckoutPage(navController: NavHostController, modifier: Modifier){
 @Composable
 fun RowItemCheckout(title: String, price: String){
     Row(
-        Modifier.fillMaxWidth().padding(8.dp)
-        , horizontalArrangement = Arrangement.SpaceBetween
+        Modifier.fillMaxWidth().padding(8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(title
-            , fontSize = 18.sp
-            , fontWeight = FontWeight.Bold
+        Text(title,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold
         )
 
-        Text("$$price"
-            , fontSize = 16.sp
+        Text("$$price",
+            fontSize = 16.sp
         )
     }
     Utils.Spacer(8)
@@ -202,17 +208,26 @@ fun RowItemCheckout(title: String, price: String){
 
 @Composable
 fun DeliverAdd(userName: String, userAddress: String){
-    Column {
+    Column(
+        Modifier.fillMaxWidth().padding(8.dp)
+    ) {
         Utils.Spacer(4)
 
-        Text("Deliver to:"
-            , fontSize = 18.sp
-            , fontWeight = FontWeight.Bold
+        Row {
+            Text(
+                "Deliver to: ",
+                fontSize = 18.sp
+            )
+            Text(
+                text = userName,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+        Utils.Spacer(4)
+        Text(
+            text = userAddress
         )
-
-        Utils.Spacer(4)
-        Text(userName)
-        Utils.Spacer(4)
-        Text(userAddress)
     }
 }
