@@ -1,11 +1,12 @@
 package com.example.shopnest.pages
 
+import android.content.Context
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -17,11 +18,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -67,21 +69,24 @@ fun ProfilePage(navController: NavHostController, modifier: Modifier = Modifier)
 
     val context = LocalContext.current
 
-    Firebase.firestore.collection("users")
-        .document(FirebaseAuth.getInstance().currentUser?.uid!!)
-        .get()
-        .addOnCompleteListener {
-            if(it.isSuccessful){
-                val result = it.result.toObject(UserModel::class.java)
-                if (result != null){
-                    user = result
+    LaunchedEffect(Unit) {
 
-                    name = result.name
-                    email = result.email
-                    address = result.address
+        Firebase.firestore.collection("users")
+            .document(FirebaseAuth.getInstance().currentUser?.uid!!)
+            .get()
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    val result = it.result.toObject(UserModel::class.java)
+                    if (result != null){
+                        user = result
+
+                        name = result.name
+                        email = result.email
+                        address = result.address
+                    }
                 }
             }
-        }
+    }
 
     Column (
         modifier = modifier.fillMaxWidth()
@@ -107,112 +112,81 @@ fun ProfilePage(navController: NavHostController, modifier: Modifier = Modifier)
         }
         Utils.Spacer(16)
 
-        // Name
-        Text("Name: ")
+        /** Name */
+        CustomFieldTitle("Name")
 
-        Utils.Spacer(8)
-
-        TextField(
-            modifier = Modifier.fillMaxWidth(),
+        CustomTextField(
             value = name,
             onValueChange = {
                 name = it
             },
-            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = {
-
-                if(name.isNotEmpty()){
-                    Firebase.firestore.collection("users")
-                        .document(FirebaseAuth.getInstance().currentUser?.uid!!)
-                        .update("name", name)
-                        .addOnCompleteListener {
-                            Utils.showText(context, "Name Updated Successfully")
-                        }
-                } else{
-                    Utils.showText(context, "Empty")
-                }
-            })
+            context = context,
+            type = "name"
         )
 
-        Utils.Spacer(16)
-        Utils.Divider()
+        /** Address */
+        CustomFieldTitle("Address:")
 
-        // Address
-
-        Text("Address: ")
-
-        Utils.Spacer(8)
-
-        TextField(
+        CustomTextField(
             value = address,
             onValueChange = {
                 address = it
             },
-            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions {
-                Firebase.firestore.collection("users")
-                    .document(FirebaseAuth.getInstance().currentUser?.uid!!)
-                    .update("address", address)
-            },
-            modifier = Modifier.fillMaxWidth()
+            context = context,
+            type = "address"
         )
 
-        Utils.Spacer(16)
-        Utils.Divider()
+        /** Email */
+        CustomFieldTitle("Email:")
 
-        // Email
-
-        Text("Email: ")
-
-        Utils.Spacer(8)
-
-        TextField(
+        CustomTextField(
             value = email,
             onValueChange = {
                 email = it
             },
-            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions {
-                Firebase.firestore.collection("users")
-                    .document(FirebaseAuth.getInstance().currentUser?.uid!!)
-                    .update("email", email)
-            },
-            modifier = Modifier.fillMaxWidth()
+            context = context,
+            type = "email"
         )
-        Utils.Spacer(16)
-        Utils.Divider()
 
-        // Total Product
-
-        Text("Total Product: ")
-
+        /** Total Product*/
+        CustomFieldTitle("Total Product:")
         Utils.Spacer(8)
 
         Text(
-            user.cartItems.size.toString(),
-            fontSize = 20.sp
+            text = user.cartItems.size.toString(),
+            fontSize = 20.sp,
+            modifier = Modifier.padding(8.dp)
         )
-
         Utils.Divider()
 
-        Row(modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Absolute.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
 
-            Text(
-                text = "View Order",
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(vertical = 8.dp)
-                    .clickable{
-                        navController.navigate(Screen.Order.route)
-                    }
-            )
+            TextButton(onClick = {
+                navController.navigate(Screen.Order.route)
+            }) {
+                Text(
+                    text = "View Order",
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
 
-            IconButton(onClick = {
+            TextButton(onClick = {
                 navController.popBackStack()
                 navController.navigate(Screen.Auth.route)
             }) {
                 Row {
+                    Text(
+                        "Sign Out",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.padding(4.dp))
+
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ExitToApp,
                         contentDescription = "Sign Out",
@@ -221,4 +195,48 @@ fun ProfilePage(navController: NavHostController, modifier: Modifier = Modifier)
             }
         }
     }
+}
+
+@Composable
+fun CustomTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    context: Context,
+    type: String
+){
+    Utils.Spacer(8)
+
+    TextField(
+        modifier = Modifier.fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp)),
+        value = value,
+        onValueChange = {
+            onValueChange(it)
+        },
+        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(onDone = {
+
+            if(value.isNotEmpty()){
+                Firebase.firestore.collection("users")
+                    .document(FirebaseAuth.getInstance().currentUser?.uid!!)
+                    .update(type, value)
+                    .addOnCompleteListener {
+                        Utils.showText(context, "${type.replaceFirstChar { it.uppercase() }} Updated Successfully")
+                    }
+            } else{
+                Utils.showText(context, "Empty ${type.replaceFirstChar { it.uppercase() }} Not Allowed")
+            }
+        }),
+    )
+
+    Utils.Spacer(16)
+    Utils.Divider()
+}
+
+@Composable
+fun CustomFieldTitle(string: String){
+    Text(
+        text = string,
+        modifier = Modifier.padding(start = 4.dp)
+    )
 }
