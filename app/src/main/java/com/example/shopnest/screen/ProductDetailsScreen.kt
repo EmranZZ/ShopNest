@@ -1,4 +1,4 @@
-package com.example.shopnest.pages
+package com.example.shopnest.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,10 +27,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,12 +40,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.example.shopnest.components.TopBar
 import com.example.shopnest.model.ProductModel
 import com.example.shopnest.utils.Utils
 import com.google.firebase.Firebase
@@ -62,70 +60,57 @@ import com.tbuonomo.viewpagerdotsindicator.compose.type.ShiftIndicatorType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductDetailsPage(productId: String, modifier: Modifier, navController: NavHostController) {
+fun ProductDetailsScreen(productId: String, modifier: Modifier, navController: NavHostController) {
 
-    Scaffold(topBar = {
-        TopAppBar(
-            title = {
-                Text(text = "Details Screen",
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(end = 16.dp),
-                    fontWeight = FontWeight.Bold
-                )
-            },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                titleContentColor = MaterialTheme.colorScheme.onSurface
-            )
-        )
-    }){ innerPadding ->
+    var product by remember {
+        mutableStateOf(ProductModel())
+    }
 
-        var product by remember {
-            mutableStateOf(ProductModel())
-        }
+    val context = LocalContext.current
 
-        val context = LocalContext.current
+    var isFavourite by remember {
+        mutableStateOf(Utils.checkFavourite(productId, context))
+    }
 
-        var isFavourite by remember {
-            mutableStateOf(Utils.checkFavourite(productId, context))
-        }
+    DisposableEffect(Unit) {
+        val listener = Firebase.firestore.collection("data")
+            .document("stock")
+            .collection("products")
+            .document(productId)
 
-        LaunchedEffect(
-            Unit
-        ) {
-            Firebase.firestore.collection("data")
-                .document("stock")
-                .collection("products")
-                .document(productId)
-                .get()
-                .addOnCompleteListener {
-                    if (it.isSuccessful){
-                        val result = it.result.toObject(ProductModel::class.java)
-                        if(result != null){
-                            product = result
-                        }
+            .addSnapshotListener { snapshot, _ ->
+                if (snapshot!=null && snapshot.exists()){
+                    val result = snapshot.toObject(ProductModel::class.java)
+                    if(result != null){
+                        product = result
                     }
                 }
+            }
+        onDispose {
+            listener.remove()
         }
+    }
+
+
+    Scaffold(topBar = {
+        TopBar(
+            product.title
+        )
+    }){ innerPadding ->
 
         Column(
             modifier = Modifier.fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp)
+                .padding(start = 8.dp, end = 8.dp)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = product.title
-            )
-
 
             Column (
                 modifier = Modifier.fillMaxWidth()
                     .padding(16.dp)
             ){
+
                 val pagerState = rememberPagerState(
                     initialPage = 0,
                     pageCount = { product.images.size}
@@ -166,17 +151,18 @@ fun ProductDetailsPage(productId: String, modifier: Modifier, navController: Nav
                 ) {
                     Text(
                         text = "$"+ product.price,
-                        fontSize = 16.sp,
-                        style = TextStyle(textDecoration = TextDecoration.LineThrough)
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
                     )
 
                     Spacer(Modifier.width(8.dp))
 
                     Text(
                         text = "$"+ product.actualPrice,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
+                        fontSize = 16.sp,
+                        style = TextStyle(textDecoration = TextDecoration.LineThrough)
                     )
+
 
                     Spacer(Modifier.weight(1f))
 
@@ -188,7 +174,7 @@ fun ProductDetailsPage(productId: String, modifier: Modifier, navController: Nav
                     ) {
                         Icon(
                             imageVector =
-                                if(Utils.checkFavourite(productId, context))
+                                if(isFavourite)
                                     Icons.Default.Favorite
                                 else
                                     Icons.Default.FavoriteBorder,
@@ -230,11 +216,11 @@ fun ProductDetailsPage(productId: String, modifier: Modifier, navController: Nav
                     )
                 }
 
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(32.dp))
 
                 Text(
                     text = "Product Description: ",
-                    fontSize = 16.sp,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
 
@@ -246,11 +232,11 @@ fun ProductDetailsPage(productId: String, modifier: Modifier, navController: Nav
                 )
 
                 if(product.otherDetails.isNotEmpty()){
-                    Spacer(Modifier.height(16.dp))
+                    Spacer(Modifier.height(32.dp))
 
                     Text(
                         text = "Other Product Details: ",
-                        fontSize = 16.sp,
+                        fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
                     )
                 }
