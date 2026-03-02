@@ -1,31 +1,43 @@
 package com.example.shopnest.screen
 
-import androidx.compose.foundation.clickable
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.ShoppingCart
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -35,6 +47,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -45,72 +59,91 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.shopnest.pages.CartPage
-import com.example.shopnest.components.CategoriesView
-import com.example.shopnest.pages.FavouritePage
 import com.example.shopnest.components.BannerView
+import com.example.shopnest.components.CategoriesView
+import com.example.shopnest.components.TopBar
+import com.example.shopnest.model.UserModel
+import com.example.shopnest.pages.CartPage
+import com.example.shopnest.pages.FavouritePage
 import com.example.shopnest.pages.ProfilePage
-import com.example.shopnest.navigation.Screen
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.firestore
+import kotlin.collections.forEachIndexed
 
 /**
  * @author EMRAN AHMED
  */
 
+data class NavItem(
+    val label: String,
+    val icon: ImageVector,
+    val selectedIcon: ImageVector
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavHostController){
+fun HomeScreen(
+    navController: NavHostController
+){
 
     val navItems = listOf(
-        NavItems("Home", Icons.Default.Home),
-        NavItems("Cart", Icons.Default.ShoppingCart),
-        NavItems("Favourite", Icons.Default.Favorite),
-        NavItems("Profile", Icons.Default.Person)
+        NavItem("Home",
+            Icons.Outlined.Home,
+            Icons.Filled.Home),
+        NavItem("Cart",
+            Icons.Outlined.ShoppingCart,
+            Icons.Filled.ShoppingCart),
+        NavItem("Favourite",
+            Icons.Outlined.FavoriteBorder,
+            Icons.Filled.Favorite),
+        NavItem("Profile",
+            Icons.Outlined.Person,
+            Icons.Filled.Person)
     )
 
     var selectedIndex by rememberSaveable{
         mutableIntStateOf(0)
     }
 
+    var userModel by remember {
+        mutableStateOf(UserModel())
+    }
+
+    DisposableEffect(Unit) {
+        val listener = Firebase.firestore.collection("users")
+            .document(FirebaseAuth.getInstance().currentUser?.uid!!)
+
+            .addSnapshotListener { snapshot, _ ->
+                if (snapshot != null && snapshot.exists()){
+                    val result = snapshot.toObject(UserModel::class.java)
+
+                    if (result != null) {
+                        userModel = result
+                    }
+                }
+            }
+
+        onDispose {
+            listener.remove()
+        }
+    }
+
+    val cartSize = userModel.cartItems.size
+
     Scaffold (
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "ShopNest",
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(end = 16.dp),
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    titleContentColor = MaterialTheme.colorScheme.onSurface
-                )
+            TopBar(
+                title = "ShopNest"
             )
         }
         ,bottomBar = {
-            NavigationBar {
-                navItems.forEachIndexed { index, navItems ->
-                    NavigationBarItem(
-                        icon = {
-                            Icon(navItems.icon, contentDescription = navItems.label)
-                        },
-                        label = {
-                            Text(navItems.label)
-                        },
-                        selected = index==selectedIndex,
-                        onClick = {
-                            selectedIndex = index
-                        }
-                    )
-                }
-
-            }
+            BottomBar(
+                navItems = navItems,
+                selectedIndex = selectedIndex,
+                cartSize = cartSize,
+                onItemSelected = { selectedIndex = it }
+            )
         }
     ) {
 
@@ -123,14 +156,68 @@ fun HomeScreen(navController: NavHostController){
     }
 }
 
-data class NavItems(
-    val label: String,
-    val icon: ImageVector
-)
+@Composable
+fun BottomBar(
+    navItems: List<NavItem> ,
+    selectedIndex: Int,
+    cartSize : Int,
+    onItemSelected: (Int) -> Unit
+) {
+    NavigationBar(
+        containerColor = MaterialTheme.colorScheme.surface,
+        tonalElevation = 0.dp
+    ) {
+        navItems.forEachIndexed { index, item ->
+            val isSelected = index == selectedIndex
 
+            NavigationBarItem(
+                selected = isSelected,
+                onClick = { onItemSelected(index) },
+                label = null,
+                icon = {
+                    if (index == 1){
+                        BadgedBox(
+                            badge = {
+                                if (cartSize > 0){
+                                    Badge(
+                                        containerColor = Color.Red,
+                                        contentColor = Color.White
+                                    ) {
+                                        Text(text = cartSize.toString())
+                                    }
+                                }
+                            }
+                        ) {
+                            Icon(
+                                imageVector = if (isSelected) item.selectedIcon else item.icon,
+                                contentDescription = item.label,
+                                modifier = Modifier
+                                    .size(26.dp)
+                            )
+                        }
+                    } else{
+
+                        Icon(
+                            imageVector = if (isSelected) item.selectedIcon else item.icon,
+                            contentDescription = item.label,
+                            modifier = Modifier
+                                .size(26.dp)
+                        )
+                    }
+                },
+                colors = NavigationBarItemDefaults.colors(
+                    indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                )
+            )
+        }
+    }
+}
 
 @Composable
-fun HomeScreenMain(navController: NavHostController, modifier: Modifier){
+fun HomeScreenMain(
+    navController: NavHostController,
+    modifier: Modifier
+){
     var name by remember {
         mutableStateOf("")
     }
@@ -142,9 +229,11 @@ fun HomeScreenMain(navController: NavHostController, modifier: Modifier){
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Column (verticalArrangement = Arrangement.Center,
+        Column (
+            verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier) {
+            modifier = Modifier
+        ) {
 
             Spacer(Modifier.height(10.dp))
 
@@ -186,19 +275,6 @@ fun HomeScreenMain(navController: NavHostController, modifier: Modifier){
                     Icon(
                         imageVector = Icons.Default.Search,
                         contentDescription = null
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ExitToApp,
-                        contentDescription = "Sign Out",
-                        modifier = Modifier.clickable{
-                            FirebaseAuth.getInstance().signOut()
-                            navController.navigate(Screen.Auth.route){
-                                popUpTo(Screen.Home.route){
-                                    inclusive = true
-                                }
-                            }
-                        }
                     )
                 }
             }
