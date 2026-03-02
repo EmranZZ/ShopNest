@@ -54,7 +54,10 @@ fun ProductItemView(
             pressedElevation = 10.dp,
             hoveredElevation = 12.dp
         ),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
+        ),
     ) {
         Column (
             modifier = Modifier.padding(12.dp)

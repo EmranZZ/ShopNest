@@ -35,7 +35,10 @@ fun OrderView(order: OrderModel ,navController: NavHostController, modifier: Mod
 
             },
         elevation = CardDefaults.cardElevation(8.dp),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
+        ),
     ) {
 
         Column(
