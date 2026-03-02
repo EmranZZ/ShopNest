@@ -37,6 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.shopnest.components.ProductItemView
+import com.example.shopnest.components.TopBar
 import com.example.shopnest.model.ProductModel
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
@@ -49,53 +50,45 @@ import com.google.firebase.firestore.firestore
 @Composable
 fun ProductCategoriesScreen(category: String, modifier: Modifier, navController: NavHostController){
 
+    var productList by remember {
+        mutableStateOf<List<ProductModel>>(emptyList())
+    }
+
+    LaunchedEffect(Unit) {
+
+        Firebase.firestore.collection("data")
+            .document("stock")
+            .collection("products")
+            .whereEqualTo("category", category)
+            .get()
+
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    // Converting the documents to ProductModel objects
+                    val result = it.result.documents.mapNotNull { docs ->
+                        docs.toObject(ProductModel::class.java)
+                    }
+                    productList = result.plus(result).plus(result).plus(result)
+                }
+            }
+    }
+
     Scaffold(topBar = {
-        TopAppBar(
-            title = {
-                Text(text = "Category: "+ category.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString()},
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(end = 16.dp),
-                    fontWeight = FontWeight.Bold
-                )
-            },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                titleContentColor = MaterialTheme.colorScheme.onSurface
-            )
+        TopBar(
+            title = category.replaceFirstChar {
+                if (it.isLowerCase()) it.titlecase() else it.toString()
+            }
         )
+
     }) { innerPadding ->
 
-        var productList by remember {
-            mutableStateOf<List<ProductModel>>(emptyList())
-        }
-
-        LaunchedEffect(Unit) {
-            Firebase.firestore.collection("data")
-                .document("stock")
-                .collection("products")
-                .whereEqualTo("category", category)
-                .get()
-                .addOnCompleteListener {
-                    if (it.isSuccessful){
-                        // Converting the documents to ProductModel objects
-                        val result = it.result.documents.mapNotNull { docs ->
-                            docs.toObject(ProductModel::class.java)
-                        }
-                        productList = result.plus(result).plus(result).plus(result)
-                    }
-                }
-        }
-
-        LazyColumn (modifier = Modifier.padding(innerPadding)
-            .fillMaxSize()
-            .padding(16.dp)
+        LazyColumn (modifier = Modifier.fillMaxSize()
+            .padding(innerPadding)
+            .padding(start = 8.dp, end = 8.dp)
         ) {
+
             items(productList.chunked(2)){ product->
-                Row (//modifier = Modifier.fillMaxWidth(),
-                    //horizontalArrangement = Arrangement.SpaceEvenly
-                ){
+                Row {
                     product.forEach {
                         ProductItemView(product = it, modifier = Modifier.weight(1f), navController)
                     }

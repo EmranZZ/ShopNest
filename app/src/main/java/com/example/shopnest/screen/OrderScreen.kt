@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.shopnest.components.OrderView
+import com.example.shopnest.components.TopBar
 import com.example.shopnest.model.OrderModel
 import com.example.shopnest.utils.Utils
 import com.google.firebase.Firebase
@@ -59,34 +60,17 @@ fun OrderScreen(navController: NavHostController, modifier: Modifier){
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "ShopNest",
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(end = 16.dp),
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    titleContentColor = MaterialTheme.colorScheme.onSurface
-                )
+            TopBar(
+                title = "Your Orders"
             )
         }
-    ) {
+    ) {innerPadding ->
 
         Column(
-            modifier = modifier.fillMaxSize()
-                .padding(16.dp)
+            modifier = Modifier.fillMaxSize()
+                .padding(innerPadding)
+                .padding(start = 16.dp, end = 16.dp)
         ) {
-            Text(
-                text = "Your Order",
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold
-            )
 
             if (orderList.isNotEmpty()){
 
