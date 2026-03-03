@@ -20,7 +20,7 @@ import com.google.firebase.auth.FirebaseAuth
  */
 
 @Composable
-fun AppNavigation(modifier: Modifier = Modifier){
+fun AppNavigation(modifier: Modifier = Modifier, onThemeToggle: () -> Unit){
     val navController = rememberNavController()
 
     val isLoggedIn = FirebaseAuth.getInstance().currentUser != null
@@ -41,7 +41,7 @@ fun AppNavigation(modifier: Modifier = Modifier){
             SignUpScreen(modifier, navController = navController)
         }
         composable(Screen.Home.route) {
-            HomeScreen( navController = navController)
+            HomeScreen( navController = navController, onThemeToggle = onThemeToggle)
         }
 
         composable(Screen.CategoryProduct.route) {

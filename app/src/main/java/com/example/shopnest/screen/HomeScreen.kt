@@ -84,7 +84,8 @@ data class NavItem(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    navController: NavHostController
+    navController: NavHostController,
+    onThemeToggle: () -> Unit,
 ){
 
     val navItems = listOf(
@@ -151,7 +152,7 @@ fun HomeScreen(
             0 -> HomeScreenMain(navController, modifier = Modifier.padding(it))
             1 -> CartPage(navController, modifier = Modifier.padding(it))
             2 -> FavouritePage(navController, modifier = Modifier.padding(it))
-            3 -> ProfilePage(navController, modifier = Modifier.padding(it))
+            3 -> ProfilePage(navController, modifier = Modifier.padding(it), onThemeToggle =  onThemeToggle)
         }
     }
 }
@@ -296,6 +297,8 @@ fun HomeScreenMain(
 @Preview
 @Composable
 fun HomeScreenPreview(){
-    HomeScreen(navController = rememberNavController())
+    HomeScreen(
+        navController = rememberNavController(),
+        onThemeToggle = {})
 }
 

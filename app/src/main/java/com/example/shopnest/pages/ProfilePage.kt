@@ -17,7 +17,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -49,7 +51,11 @@ import com.google.firebase.firestore.firestore
  */
 
 @Composable
-fun ProfilePage(navController: NavHostController, modifier: Modifier = Modifier){
+fun ProfilePage(
+    navController: NavHostController,
+    modifier: Modifier = Modifier,
+    onThemeToggle: () -> Unit
+){
 
     var user by remember {
         mutableStateOf(UserModel())
@@ -175,6 +181,18 @@ fun ProfilePage(navController: NavHostController, modifier: Modifier = Modifier)
                 )
             }
 
+
+            IconButton(
+                onClick = {
+                    onThemeToggle()
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Settings,
+                    contentDescription = "Toggle Theme"
+                )
+            }
+
             TextButton(onClick = {
                 navController.popBackStack()
                 navController.navigate(Screen.Auth.route)
@@ -190,7 +208,7 @@ fun ProfilePage(navController: NavHostController, modifier: Modifier = Modifier)
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ExitToApp,
                         contentDescription = "Sign Out",
-                        )
+                    )
                 }
             }
         }
